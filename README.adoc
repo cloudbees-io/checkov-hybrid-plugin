@@ -1,4 +1,4 @@
-= CloudBees action: Scan with njsscan
+= CloudBees action: Scan with checkov
 
 Use this action to perform scan on a repository with checkov scanner.
 
