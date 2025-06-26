@@ -1,11 +1,12 @@
-= CloudBees action: Scan with checkov
+= CloudBees action: Scan with Checkov
 
-Use this action to perform scan on a repository with checkov scanner.
+Use this action to scan infrastructure configurations with the open-source scanner Checkov, sponsored by Prisma Cloud.
+Checkov also functions as a Software Composition Analysis (SCA) scanner.
 
 == Inputs
 
 [cols="2a,1a,1a,3a",options="header"]
-.Input details to be done
+.Input details
 |===
 
 | Input name
@@ -16,7 +17,7 @@ Use this action to perform scan on a repository with checkov scanner.
 | `workspace-dir`
 | String
 | No
-| Specify the path where the checked out code will be present for scanning.
+| The path of the code to be scanned.
 
 |===
 
@@ -26,8 +27,7 @@ In your YAML file, add:
 
 [source,yaml]
 ----
-
-      - name: checkov hybrid plugin scan
+      - name: Scan with Checkov scanner
         uses: cloudbees-io/checkov-hybrid-plugin@v1
 
 ----
