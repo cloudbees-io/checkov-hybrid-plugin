@@ -1,7 +1,7 @@
 = CloudBees action: Scan with Checkov
 
-Use this action to scan infrastructure configurations with the open-source scanner Checkov, sponsored by Prisma Cloud.
-Checkov also functions as a Software Composition Analysis (SCA) scanner.
+Use this action to scan infrastructure configurations with the open-source scanner Checkov or use it as a Software Composition Analysis (SCA) scanner.
+You can also use the action output as a quality gate for the next step or job in your workflow.
 
 == Inputs
 
@@ -21,14 +21,131 @@ Checkov also functions as a Software Composition Analysis (SCA) scanner.
 
 |===
 
-== Usage example
+== Usage examples
 
-In your YAML file, add:
+=== Basic example
+
+The following is a basic example of using the action:
 
 [source,yaml]
 ----
       - name: Scan with Checkov scanner
         uses: cloudbees-io/checkov-hybrid-plugin@v1
+----
+
+=== Using the action output
+
+Access the output values in downstream steps and jobs using the `outputs` xref:dsl-syntax:contexts.adoc[context].
+
+Use the output in your workflow as follows, where <action_step_ID> is the action step ID, and <severity> is an output parameter name, such as `critical-count`:
+
+[source,yaml]
+----
+${{steps.<action_step_ID>.outputs.<severity>}}
+----
+
+The following example uses the action output in a downstream step of the same job:
+
+[source,yaml,role="default-expanded"]
+----
+
+name: my-workflow
+kind: workflow
+apiVersion: automation.cloudbees.io/v1alpha1
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+
+jobs:
+  checkov-hybrid-scan-job:
+    steps:
+      - name: check out source code
+        uses: cloudbees-io/checkout@v1
+
+      - id: checkov-step
+        name: checkov hybrid plugin scan
+        uses: cloudbees-io/checkov-hybrid-plugin@v1
+
+      - name: source dir examine
+        uses: docker://golang:1.20.3-alpine3.17
+        shell: sh
+        run: |
+          ls -latR /cloudbees/workspace
+
+      - id: print-outputs-from-checkov-step
+        name: print outputs from upstream checkov step
+        uses: docker://alpine:latest
+        run: |
+            #printing all outputs
+            echo "Outputs from upstream checkov step:"
+            echo "Critical count: ${{steps.checkov-step.outputs.critical-count}}"
+            echo "Very high count: ${{steps.checkov-step.outputs.very-high-count}}"
+            echo "High count: ${{steps.checkov-step.outputs.high-count}}"
+            echo "Medium count: ${{steps.checkov-step.outputs.medium-count}}"
+            echo "Low count: ${{steps.checkov-step.outputs.low-count}}"
+
+----
+
+The following example uses the action output in a downstream job:
+
+[source,yaml,role="default-expanded"]
+----
+
+name: my-workflow
+kind: workflow
+apiVersion: automation.cloudbees.io/v1alpha1
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+
+jobs:
+  job1:
+    outputs:
+      checkov-job-output-critical: ${{ steps.checkov-step.outputs.critical-count }}
+      checkov-job-output-very-high: ${{ steps.checkov-step.outputs.very-high-count }}
+      checkov-job-output-high: ${{ steps.checkov-step.outputs.high-count }}
+      checkov-job-output-medium: ${{ steps.checkov-step.outputs.medium-count }}
+      checkov-job-output-low: ${{ steps.checkov-step.outputs.low-count }}
+    steps:
+      - name: check out source code
+        uses: cloudbees-io/checkout@v1
+        with:
+          repository: my-gh-repo-org/my-repo
+          ref: main
+          token: ${{ secrets.GIT_PAT }}
+
+      - id: checkov-step
+        name: checkov hybrid plugin scan
+        uses: cloudbees-io/checkov-hybrid-plugin@v1
+
+  job2:
+    needs: job1
+    steps:
+      - id: print-outputs-from-job1
+        name: print outputs from upstream job1
+        uses: docker://alpine:latest
+        run: |
+          # Printing all outputs
+          echo "Outputs from upstream checkov job:"
+          echo "Critical count: ${{ needs.job1.outputs.checkov-job-output-critical }}"
+          echo "Very high count: ${{ needs.job1.outputs.checkov-job-output-very-high }}"
+          echo "High count: ${{ needs.job1.outputs.checkov-job-output-high }}"
+          echo "Medium count: ${{ needs.job1.outputs.checkov-job-output-medium }}"
+          echo "Low count: ${{ needs.job1.outputs.checkov-job-output-low }}"
 
 ----
 
