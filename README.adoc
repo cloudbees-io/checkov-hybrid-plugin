@@ -1,6 +1,7 @@
 = CloudBees action: Scan with Checkov
 
-Use this action to scan infrastructure configurations with the open-source scanner Checkov or use it as a Software Composition Analysis (SCA) scanner.
+Use this action to scan infrastructure configurations with the open-source scanner Checkov.
+Checkov also functions as a Software Composition Analysis (SCA) scanner.
 You can also use the action output as a quality gate for the next step or job in your workflow.
 
 == Inputs
@@ -18,6 +19,38 @@ You can also use the action output as a quality gate for the next step or job in
 | String
 | No
 | The path of the code to be scanned.
+
+|===
+
+== Outputs
+
+[cols="2a,1a,4a",options="header"]
+.Output details
+|===
+
+| Output name
+| Data type
+| Description
+
+| `critical-count`
+| String
+| The number of *Critical* security findings discovered during the scan.
+
+| `very-high-count`
+| String
+| The number of *Very high* security findings discovered during the scan.
+
+| `high-count`
+| String
+| The number of *High* security findings discovered during the scan.
+
+| `medium-count`
+| String
+| The number of *Medium* security findings discovered during the scan.
+
+| `low-count`
+| String
+| The number of *Low* security findings discovered during the scan.
 
 |===
 
@@ -157,4 +190,4 @@ link:https://opensource.org/license/mit/[MIT license].
 == References
 
 * Learn more about link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/actions[using actions in CloudBees workflows].
-* Learn about link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/[the CloudBees platform].
+* Learn about link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/[CloudBees platform].
