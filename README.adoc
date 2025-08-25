@@ -35,7 +35,7 @@ The following is a basic example of using the action:
 
 === Using the action output
 
-Access the output values in downstream steps and jobs using the `outputs` xref:dsl-syntax:contexts.adoc[context].
+Access the output values in downstream steps and jobs using the `outputs` link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/dsl-syntax/contexts[context].
 
 Use the output in your workflow as follows, where <action_step_ID> is the action step ID, and <severity> is an output parameter name, such as `critical-count`:
 
